@@ -9,6 +9,7 @@ import {
 } from "../config";
 import $ from "jquery";
 import Storage from "../utils/storage";
+import taskDesc from "./taskDesc";
 
 
 class BetterFoodChoice {
@@ -19,6 +20,22 @@ class BetterFoodChoice {
 
         // detect store
         this.getStore();
+
+        // setup url change polling
+        let oldUrl = window.location.href;
+        setInterval(()=>{
+            if(oldUrl !== window.location.href){
+                oldUrl =window.location.href;
+                this.tracker.stop()
+                this.tracker.trackPage(this.store.getPageCategory(), window.location.href, $("title").text(), this.store.getGTIN());
+            }
+        },1000)
+
+        $(window).on("onbeforeunload", function() {
+           this.tracker.stop()
+        });
+
+
     }
 
 
@@ -64,8 +81,8 @@ class BetterFoodChoice {
                         this.store.getFoodValues()
                     );
 
-                    if (remoteNutriScore != localNutriScore)
-                        alert(`Different ${remoteNutriScore} ${localNutriScore}`)
+                    // if (remoteNutriScore != localNutriScore)
+                    //     alert(`Different ${remoteNutriScore} ${localNutriScore}`)
                     const nutri_score_final = remoteNutriScore || localNutriScore
 
                     // display score
@@ -224,7 +241,7 @@ class BetterFoodChoice {
         return this.store;
     }
 
-    showAlert(title, text, actionHandler) {
+    static showAlert(title, text, actionHandler) {
         const $alertWrapper = $("<div />").css({
             position:'fixed',
             top:0,
@@ -269,6 +286,48 @@ class BetterFoodChoice {
         })
 
         $("body").append($alertWrapper.append($alert.append($h1, $p, $action)));
+
+    }
+
+    static showTaskDesc(actionHandler){
+
+        const $alertWrapper = $("<div />").css({
+            position:'fixed',
+            top:0,
+            left:0,
+            width:'100vw',
+            height: '100vh',
+            zIndex:99999999,
+            textAlign:'center',
+            padding:40,
+            justifyContent:'center',
+            overflow:'scroll',
+            background: 'rgba(0,0,0,.3)'
+        })
+        const $alert = $('<div />').css({
+            width: '800px',
+            padding: 30,
+            textAlign:'left',
+            display:'inline-block',
+            background: 'white',
+            borderRadius:5,
+            boxShadow: '0 5px 10px rgba(0,0,0,.2)'
+        })
+        const $p = $("<div/>").css({
+        }).html(taskDesc)
+        const $action = $("<button />").css({
+            background: 'rgba(0,0,0,.4)',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius:4,
+            marginTop:20
+        }).text("Close").on("click", (e) => {
+            e.preventDefault();
+            $alertWrapper.remove();
+            actionHandler()
+        })
+
+        $("body").append($alertWrapper.append($alert.append($p, $action)));
 
     }
 
