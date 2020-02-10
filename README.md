@@ -1,6 +1,6 @@
 # Installation Guide
 
-![NutriScore Extension](AAA)(http://github.com/SereneLian/NutriScore-eCommercial-Project/blob/master/images/Screenshot.png)
+<img src='images/image1.png' title='images' style='max-width:200px'></img>
 
 
 ## Download and Unzip
