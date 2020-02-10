@@ -1,8 +1,7 @@
 # Installation Guide
 
-<img src="http://github.com/SereneLian/NutriScore-eCommercial-Projec/images/Screenshot.png"
-     alt="A novel chrome extension to discover better food choices in eCommerce environments"
-     style="float: left; margin-right: 10px;" />
+![image]("http://github.com/SereneLian/NutriScore-eCommercial-Projec/images/Screenshot.png")
+
 
 ## Download and Unzip
 To install the Google Chrome extension, please download the ZIP of the repository.
