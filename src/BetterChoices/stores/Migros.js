@@ -243,7 +243,7 @@ class Migros extends Generic {
      */
     getUrlsFromOverview() {
         let urls = [];
-        $('.mui-product-tile').each(function () {
+        $('.mui-product-tile:not(.updatedBetterFoodChoice)').each(function () {
             urls.push($(this).attr("href"))
         })
         return urls
@@ -290,13 +290,22 @@ class Migros extends Generic {
         const usualPriceEl = customUsualPriceEl || $('.usual-price');
         const discountContainer = customDiscountContainer || $('.sidebar-discount-badge');
 
-        let currentPrice_chf = currentPriceEl.text().replace('.-', '').replace('-', '').trim();
+        // prevent nan
+        if(currentPriceEl.length ===0){
+            return
+        }
+            
+
+        let currentPrice_chf = currentPriceEl.text().replace('.-', '').replace('CHF','').replace("€",'').replace("ab",'').replace("Nan",'').replace('-', '').trim();
+        console.log(currentPrice_chf)
         currentPrice_chf = parseFloat(currentPrice_chf);
 
         const currentPrice_eur = convertPrice(currentPrice_chf, category)
 
         if (userCountry === 'de')
             currentPriceEl.text('€ ' + currentPrice_eur)
+        else 
+            currentPriceEl.text('CHF '+currentPrice_chf)
 
         let usualPrice_chf = usualPriceEl.text().replace('.-', '').replace('-', '').replace('statt', '').trim();
         usualPrice_chf = parseFloat(usualPrice_chf)
@@ -431,7 +440,11 @@ class Migros extends Generic {
         // Remove Add to Favorite 
         $('.sidebar-favorite-button-container').remove()
 
+        // Remove Review and rating (BY JIE)
+        $('.mui-rating, .mui-rating-counter').remove()
 
+        // Remove energy-pictogram-box(BY JIE)
+        $('.energy-pictogram-box').remove()
 
         // Category Overview Page
         $(`
