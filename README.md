@@ -1,6 +1,6 @@
 # Installation Guide
 
-<img src='images/image1.png' title='images' style='max-width:200px'></img>
+<img src='images/Screenshot.png' title='images' style='max-width:200px'></img>
 
 
 ## Download and Unzip
