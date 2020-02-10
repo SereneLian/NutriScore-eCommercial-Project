@@ -1,6 +1,6 @@
 # Installation Guide
 
-<img src="https://www.autoidlabs.ch/wp-content/uploads/2019/12/1000_700pixs_p1.png"
+<img src="http://github.com/serenelian/images/Screenshot.png"
      alt="A novel chrome extension to discover better food choices in eCommerce environments"
      style="float: left; margin-right: 10px;" />
 
