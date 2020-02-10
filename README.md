@@ -1,6 +1,6 @@
 # Installation Guide
 
-![image]("http://https://github.com/SereneLian/NutriScore-eCommercial-Project/blob/master/images/Screenshot.png")
+![image](http://https://github.com/SereneLian/NutriScore-eCommercial-Project/blob/master/images/Screenshot.png)
 
 
 ## Download and Unzip
