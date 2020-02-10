@@ -2,26 +2,53 @@
 
 <img src='images/Screenshot.png' title='images' style='max-width:200px'></img>
 
+# Introduction
 
-## Download and Unzip
+The research project ‘eCommerce Widget for Nutrition and Sustainability’ aims to assess the potential of digital interventions to improve individual food selection in eCommerce environments. In particular, the goal of this research project is to identify the impact of nutrition-oriented (e.g. Nutri-Score) and sustainability-oriented (e.g. Beelong) labels on consumer behavior. Therefore, we will implement a web-based browser extension that seamlessly integrates into existing online grocery shopping websites to visualize the nutritional and/or environmental impact of a product to the consumer. Further, the application is designed to track how consumers engage with the website (e.g. which products are looked at and which products are actually purchased) post-exposure to either nutritional and/or sustainability labels.
+
+This project is based on product data from the eCommerce website as well as data from the AutoID Eatfit database, which includes more than 50k products with data on nutrients and ingredients for food products sold in Switzerland. This database enables us to display relevant information, such as Nutri-Score, as well as information related to sustainability, such as country of origin, ec0-labels, packaging etc.
+
+We plan to recruit between 100 and 1000 volunteers for the eCommerce shopping study within the university laboratories available at ETH, HSG and FAU. After collecting behavior data from the experiments, we will analyse the user behavior as a response to label exposure using descriptive statistics and machine learning to detect if and how such labels can influence customer decision-making during shopping journeys in eCommerce environments.
+
+This project is a research project of the Auto-ID Labs ETH/HSG (www.autoidlabs.ch). Find out more about the research project here: https://www.autoidlabs.ch/projects/ecommerce-widget-for-nutrition-and-sustainability/ 
+
+# How to Install 
+
+### Download and Unzip
 To install the Google Chrome extension, please download the ZIP of the repository.
 Unzip the archive locally on your machine.
 
-## Set Your Chrome Browser to Developer Mode
+### Set Your Chrome Browser to Developer Mode
 On Google Chrome type : chrome://extensions/. Enable the developer mode (right top of the browser). 
-
-## Install the 'better-food-choices' Chrome Extension
 Press the 'Load Unpacked' Button and select the **build** folder inside the ZIP you just downloaded. 
 The Extension is now installed on your Chrome Browser.
 
-## Go shopping 
+### Go shopping 
 Go to https://produkte.migros.ch/ to test the application and discover better food choices! 
 
-# Admin mode
+
+
+# Frontend Development
+
+### Admin mode
 On https://produkte.migros.ch/, click the extension icon to enter the admin mode. You can change your settings there. 
 
-# About the 'better-food-choices' Chrome Extension
-This project is a research project of the Auto-ID Labs ETH/HSG (www.autoidlabs.ch). Find out more about the research project here: https://www.autoidlabs.ch/projects/ecommerce-widget-for-nutrition-and-sustainability/ 
+### BUILD
+Make sure to have node and npm installed
+Download the repo
+From the root folder
+`npm watch` and `npm build` to run the development mode and build the package
+
+# Backend Development
+The backend is running on Google firebase with node.js development.The main function of our backend is to receive and store all user datda during the experiment. Current code can be found at https://github.com/SereneLian/NutriScore-Firebase
+
+### Data Access
+To view the backend data, please go to google firebase console and get access to this project. Click the "database" then you can find all required data. We are planning to use google bigquery to implment furthur analysis.
+
+
+# Future Work
+We are going to develope a sustainability extension based on this one. Further information will be updated soon.
+
 
 The Chrome Extension now works for around 90% of the food and drink products on produkte.migros.ch <br/>
 If a product is missing the necessary data for Nutri-Score calculation, an image containing this information is displayed <br/>
@@ -30,9 +57,3 @@ The files with the name yoghurts.ttl and yoghurts.xml contain the data for rough
 Java Backend is finished <br/> <br/>
 In order to use the extension, the backend has to be running on localhost:8080 as of right now
 
-
-## BUILD
-Make sure to have node and npm installed
-Download the repo
-From the root folder
-`npm watch` and `npm build` to run the development mode and build the package
