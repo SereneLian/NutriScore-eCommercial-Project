@@ -41,7 +41,7 @@ const CartList = props => {
         setGroup(await Storage.get("bfc:studyGroup"))
     })()}, [])
 
-    const total = Math.round(props.products.reduce((sum, a)=> sum+(parseFloat(a.price) *(a.quantity||1)), 0)*100)/100;
+    const total = (Math.round(props.products.reduce((sum, a)=> sum+(parseFloat(a.price) *(a.quantity||1)), 0)*100)/100).toFixed(2);
 
     return (
         <CartListWrapper id="bfcCartList" pose={props.showCartList ? 'show' : 'hide'} initialPose="hide">
@@ -52,7 +52,7 @@ const CartList = props => {
                     <div className="product">
                         <div className="img" style={{background: `url(${p.img})`}} />
                         <p>
-                            {p.name} <span>x{p.quantity || 1}</span>
+                        {p.quantity > 1 ? p.quantity+' x':''}{p.name}
                             <span>{p.currency.toUpperCase()} {p.price}</span>
                             {((group === 'A') || (group == 'B' && ['C','D','E'].indexOf(p.nutriScore) === -1)) && <img src={chrome.runtime.getURL(`ns${p.nutriScore}.png`)} />}
                         </p>
