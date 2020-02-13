@@ -294,7 +294,7 @@ class BetterFoodChoice {
             padding: '10px 20px',
             borderRadius: 4,
             marginTop: 20
-        }).text("Close").on("click", (e) => {
+        }).text("Go to Final Survey").on("click", (e) => {
             e.preventDefault();
             $alertWrapper.remove();
             actionHandler()

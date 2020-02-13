@@ -298,7 +298,7 @@ class Migros extends Generic {
 
         let currentPrice_chf = currentPriceEl.text().replace('.-', '').replace('CHF','').replace("€",'').replace("ab",'').replace("Nan",'').replace('-', '').trim();
         console.log(currentPrice_chf)
-        currentPrice_chf = parseFloat(currentPrice_chf);
+        currentPrice_chf = parseFloat(currentPrice_chf).toFixed(2);
 
         const currentPrice_eur = convertPrice(currentPrice_chf, category)
 
@@ -434,17 +434,23 @@ class Migros extends Generic {
      */
     clean() {
         // Single Product Page
-        // Remove Availability Information
-        $('.sidebar-availability-store-information, .sidebar-product-availability').remove()
 
-        // Remove Add to Favorite 
-        $('.sidebar-favorite-button-container').remove()
+        //Remove Discount (BY JIE)
+        $('.sidebar-discount-badge').remove()
 
         // Remove Review and rating (BY JIE)
         $('.mui-rating, .mui-rating-counter').remove()
 
         // Remove energy-pictogram-box(BY JIE)
         $('.energy-pictogram-box').remove()
+
+        // Remove Availability Information
+        $('.sidebar-availability-store-information, .sidebar-product-availability').remove()
+
+        // Remove Add to Favorite 
+        $('.sidebar-favorite-button-container').remove()
+
+
 
         // Category Overview Page
         $(`
