@@ -46,7 +46,7 @@ The backend is running on Google firebase with node.js development.The main func
 To view the backend data, please go to google firebase console and get access to this project. Click the "database" then you can find all required data. We are planning to use google bigquery to implment furthur analysis.
 
 ### Data Export
-Go to google cloud cell https://console.cloud.google.com/home/dashboard?project=ecommercewidget-265813&cloudshell=true and set the project id gcloud config set project ecommercewidget-265813. Then export the data with following command:gcloud firestore export gs://firework_to_big_eco_project --collection-ids users,events
+Go to google cloud cell https://console.cloud.google.com/home/dashboard?project=ecommercewidget-265813&cloudshell=true and set the project id gcloud config set project ecommercewidget-265813. Then export the data with following command:gcloud firestore export: gcloud firestore export gs://firework_to_big_eco_project --collection-ids users,events
 
 ### Data Import 
 Go to bigquery and click "creat table". Choose "import from google cloud store" and click our bucket to import data.
