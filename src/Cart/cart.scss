@@ -1,5 +1,8 @@
 @import '../vars.scss';
 
+@import '../../node_modules/react-toastify/dist/ReactToastify.css';
+
+
 #bfcCart {
     *:not(svg|*) {
         all: initial;
@@ -189,4 +192,83 @@
         align-items: center;
         justify-content: center;
     }
+}
+
+#bfcRestartBtn {
+    @extend #bfcCartButtonEl;
+    z-index: 99999;
+    svg {
+        width: 100%;
+        height: 100%;
+        path {
+            fill: white;
+        }
+    }
+}
+
+
+.mui-product-tile .bfcHideProd {
+    display: flex;
+    position:absolute;
+    content: "loading";
+    background: white;
+    width: 100%;
+    height: 100%;
+    top:0;
+    color: black;
+    font-size: 20px;
+    left:0;
+    z-index: 999;
+    align-items:center;
+    justify-content: center;
+}
+// .mui-product-tile.updatedBetterFoodChoice .bfcHideProd {
+//     display: none;
+// }
+
+
+#bfcLoader {
+    position: fixed;
+    z-index: 999999;
+    top:0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.mui-js-shoppinglist-item-add {
+    float: right;
+    position: relative;
+    top: 4px;
+}
+.bfcAddToCartList {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    background: $primary;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 25px;
+    border: none;
+    transition: all .3s;
+    float: right;
+    outline: none;
+    cursor: pointer;
+    &:hover {
+        background: darken($color: $primary, $amount: 10);
+    }
+    padding-bottom: 5px;
+    text-shadow: 0 2px 3px rgba($color: #000000, $alpha: .2);
+}
+
+.mui-product-tile-footer {
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba($color: #000000, $alpha: .1);
 }

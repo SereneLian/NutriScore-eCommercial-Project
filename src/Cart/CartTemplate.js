@@ -6,6 +6,8 @@ import {CartIcon, CloseIcon} from './icons';
 import Storage from '../utils/storage';
 import { settings } from '../config';
 import BetterFoodChoice from '../BetterChoices/App';
+import {unit,multiply} from 'mathjs'
+import { ToastContainer, toast } from 'react-toastify';
 
 
 const CartButton = props => {
@@ -20,7 +22,14 @@ const CartButton = props => {
 const TaskButton = props => {
     return (
         <div id="bfcCartButtonEl" className="taskPopup" onClick={ e => {
-            BetterFoodChoice.showTaskDesc(()=>{
+            BetterFoodChoice.showTaskDesc(0, ()=>{
+
+                BetterFoodChoice.showTaskDesc(1, ()=>{
+                    BetterFoodChoice.showTaskDesc(2, ()=>{
+                    
+                    })
+                })
+                
             })
         }}>
             ?
@@ -33,20 +42,21 @@ const CartListWrapper = posed.div({
     hide: {left: '-100%'}
 })
 const CartList = props => {
-    // console.log(props.products)
 
     const [group, setGroup] = useState('C')
+    const [country, setCountry] = useState('ch')
 
     useEffect(()=> {(async()=>{
         setGroup(await Storage.get("bfc:studyGroup"))
+        setCountry(await Storage.get("bfc:country"))
     })()}, [])
 
-    const total = (Math.round(props.products.reduce((sum, a)=> sum+(parseFloat(a.price) *(a.quantity||1)), 0)*100)/100).toFixed(2);
+    const total = Math.round(props.products.reduce((sum, a)=> sum+(parseFloat(a.price) *(a.quantity||1)), 0)*100)/100;
 
     return (
         <CartListWrapper id="bfcCartList" pose={props.showCartList ? 'show' : 'hide'} initialPose="hide">
             <span className="closeSide" onClick={e => props.setShowCartList(false)} ><CloseIcon color={"rgba(0,0,0,.3)"} /></span>
-            <h1>Cart</h1>
+            <h1>Warenkorb</h1>
             <div className="cartInner">
                 {props.products.map(p => (
                     <div className="product">
@@ -54,6 +64,7 @@ const CartList = props => {
                         <p>
                         {p.quantity > 1 ? p.quantity+' x':''}{p.name}
                             <span>{p.currency.toUpperCase()} {p.price}</span>
+                            <span>{p.size ? multiply(p.size,p.quantity||1).toString():''}</span>
                             {((group === 'A') || (group == 'B' && ['C','D','E'].indexOf(p.nutriScore) === -1)) && <img src={chrome.runtime.getURL(`ns${p.nutriScore}.png`)} />}
                         </p>
                         <a href="#" onClick={e => {
@@ -62,74 +73,33 @@ const CartList = props => {
                         }}><CloseIcon  color={"white"}/></a>
                     </div>
                 ))}
-                {props.products.length === 0 && <p>No products yet</p>}
+                {props.products.length === 0 && <p>Noch keine Produkte</p>}
             </div>
             <div className="listFooter">
                 <div className="innerFooter">
-                <p className="tot">Total: <span>{((props.products[0] || {}).currency || 'chf').toUpperCase()} {total}</span></p>
+                <p className="tot">Summe: <span style={{display:'block'}}>{((props.products[0] || {}).currency || 'chf').toUpperCase()} {total.toFixed(2)}</span></p>
                 <button className="button" onClick={e => {
                     // return if over budget
-                    console.log(total, props.products[0].currency, settings.maxBudget[props.products[0].currency])
-                    if(total > settings.maxBudget[props.products[0].currency]){
-                        alert(`Over budget! (max: ${props.products[0].currency}${settings.maxBudget[props.products[0].currency]})`);
+                    if(total > settings.maxBudget[country]){
+                        toast.warn(`Over budget! (max: ${country == 'ch' ? 'CHF' : '€'}${settings.maxBudget[country]})`);
                         return
                     }
-                    props.setShowCartList(false)
-                    setTimeout(props.onFinishStudy, 800)
-                }}>Check out</button>
+                    BetterFoodChoice.showAlert("Studie beenden","Sind Sie sicher, dass Sie Ihre Einkaufsaufgabe beendet haben?", ()=>{
+                        
+                    }, 'Nein', ()=>{
+                        props.setShowCartList(false)
+                        setTimeout(props.onFinishStudy, 800)
+                    }, 'Ja')
+                    
+                }}>Zur Kasse</button>
                 </div>
-                <div>Budget: {((props.products[0] || {}).currency || 'CHF').toUpperCase()} {settings.maxBudget[(props.products[0] || {}).currency || 'chf']}</div>
+                <div>Budget: {country == 'ch' ? 'CHF' : '€'}{settings.maxBudget[country]}</div>
             </div>
         </CartListWrapper>
     )
 }
 
 
-const NotificationEl = posed.div({
-    hide: {opacity: 0, top: '-100%'},
-    show: {opacity:1, top:0}
-})
-const Notification = props => {
-
-    const [message, setMessage] = useState('Product Added!')
-    const [products, setProducts] = useState([])
-    const [showNoti, setShowNoti] = useState('hide')
-   
-    // set default products
-    useEffect(()=>{
-       (async()=>{
-           setProducts(await Storage.get("bfc:cart") ? JSON.parse(await Storage.get("bfc:cart")) : [])
-       })()
-    },[])
-   
-    useEffect(() => {
-       
-        const currentAmount = products.reduce((sum ,p) => sum+(p.quantity || 1), 0);
-        const newAmount = props.products.reduce((sum ,p) => sum+(p.quantity || 1), 0)
-
-        if( currentAmount> newAmount){
-            setMessage("Product Removed!")
-            setShowNoti('show')
-        }
-
-
-        if(currentAmount < newAmount){
-            setMessage("Product Added!")
-            setShowNoti('show')
-        }
-        setProducts(props.products)
-
-        setTimeout(() => {
-            setShowNoti('hide')
-        }, 2000)
-
-    }, [props.products])
-    return (
-        <NotificationEl id="bfcNotification" pose={showNoti} initialPose="hide">
-            {message}
-        </NotificationEl>
-    )
-}
 
 const CartTemplate = props => {
 
@@ -157,9 +127,13 @@ const CartTemplate = props => {
     useEffect(() => {
         
         (async()=>{
-            setProducts(await Storage.get("bfc:cart") ? JSON.parse(await Storage.get("bfc:cart")) : [])
+            const localStorageCart = await Storage.get("bfc:cart");
+            setProducts(localStorageCart ? JSON.parse(localStorageCart).map(p => p.size ? ({...p, size: unit(p.size)}) : p) : [])
             setInit(true)
             props.cartClass.addProduct = (p) => {
+
+                // toast 
+                toast.success('Produkt hinzugefügt!')
                 props.cartClass.onAddToCart(p)
 
 
@@ -176,6 +150,7 @@ const CartTemplate = props => {
             };
             props.cartClass.removeProduct = (gtin) => {
                 props.cartClass.onRemoveFromCart(gtin);
+                toast.success('Produkt entfernt!')
                 removeProduct(gtin)
             }
         })()
@@ -186,14 +161,14 @@ const CartTemplate = props => {
     useEffect(()=>{
         if(!init) // prevent override empty cart
             return
-        Storage.set("bfc:cart", JSON.stringify(products))
+        Storage.set("bfc:cart", JSON.stringify(products.map(p => p.size ? ({...p, size: p.size.toString()}) :p)))
     },[products])
 
     return [
-        <Notification products={products} />,
         <TaskButton />,
+        <ToastContainer />,
         <CartButton count={products.reduce((sum ,p) => sum+(p.quantity || 1), 0)} setShowCartList={setShowCartList}/>,
-        <CartList products={products} onFinishStudy={() => props.cartClass.onFinishStudy(products)} showCartList={showCartList} setShowCartList={setShowCartList} removeProduct={removeProduct}/>
+        <CartList products={products} onFinishStudy={() => props.cartClass.onFinishStudy(products.map(p => p.size ? {...p,size: multiply(p.size, p.quantity||1).toString()} : p))} showCartList={showCartList} setShowCartList={setShowCartList} removeProduct={removeProduct}/>
     ]
 
 }
