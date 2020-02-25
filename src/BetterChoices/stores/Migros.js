@@ -19,6 +19,7 @@ import {
 } from '../../utils';
 import pageCategoriesJSON from './data/pageCategories.json'
 import Storage from '../../utils/storage';
+import shortid from 'shortid';
 
 /**
  *
@@ -58,6 +59,10 @@ class Migros extends Generic {
         }).first()
     }
 
+    getClosestListItem(el){
+        return el.closest('.mui-product-tile')
+    }
+
     setDefaultRegion() {
         // check region
         if (getCookie('m-product-region-temporary-cooperative') !== 'gmos') {
@@ -86,6 +91,16 @@ class Migros extends Generic {
         }
     }
 
+    hideProducts(){
+        const $el = $('<div />').addClass("bfcHideProd").html("<p>Loading</p>")
+        $('.mui-product-tile:not(.updatedBetterFoodChoice)').append($el);
+        // $('.mui-product-tile:not(.updatedBetterFoodChoice)').css({opacity:0})
+    }
+
+    changeLogoLink(){
+        $(".logo").closest("a").attr("href",'https://www.migros.ch/de/einkaufen.html')
+    }
+
     /**
      *
      *
@@ -94,7 +109,7 @@ class Migros extends Generic {
      * @memberof Migros
      */
     listItemTargetFromHref(u) {
-        return this.listItemFromHref(u).find('.mui-js-rating').html("")
+        return this.listItemFromHref(u).find('.mui-product-tile-footer')
     }
 
 
@@ -249,6 +264,16 @@ class Migros extends Generic {
         return urls
     }
 
+    editUrlsFromOverview() {
+        $('.mui-product-tile:not(.updatedBetterFoodChoice)').each(function () {
+            // remove buttons
+            // const $button = $(this).find('.mui-js-shoppinglist-item-add').clone(false, false);
+            $(this).find('.mui-product-tile-footer').html($('<div class="mui-js-shoppinglist-item-add"><button class="bfcAddToCartList">+</button></div>'))
+            $(this).attr("bfcid", shortid.generate())
+            $(this).addClass('updatedBetterFoodChoice')
+        })
+    }
+
     /**
      * Wrapper function to iteratively convert prices in list
      *
@@ -261,14 +286,20 @@ class Migros extends Generic {
                 el.find('.mui-product-tile-discount-image-container'),
                 cat
             )
-            el.addClass('updatedBetterFoodChoice')
+            el.find(".bfcHideProd").fadeOut().remove()
       
     }
 
     getAddToCartButton(element) {
         if (!element)
-            return $(".sidebar-product-information").find(".mui-shoppinglist-add").first()
-        return element.find('.mui-shoppinglist-button-add')
+            return $(".sidebar-product-information").find(".mui-shoppinglist-add")
+        return element.find('.mui-js-shoppinglist-item-add')
+    }
+
+
+    blockAddToCart(){
+        const $el = $('.mui-product-tile:not(.updatedBetterFoodChoice)').find(".mui-js-shoppinglist-item-add").clone(true).off();
+        $('.mui-product-tile:not(.updatedBetterFoodChoice)').find(".mui-js-shoppinglist-item-add").replaceWith($el)
     }
 
 
@@ -297,7 +328,6 @@ class Migros extends Generic {
             
 
         let currentPrice_chf = currentPriceEl.text().replace('.-', '').replace('CHF','').replace("€",'').replace("ab",'').replace("Nan",'').replace('-', '').trim();
-        console.log(currentPrice_chf)
         currentPrice_chf = parseFloat(currentPrice_chf).toFixed(2);
 
         const currentPrice_eur = convertPrice(currentPrice_chf, category)
@@ -307,10 +337,11 @@ class Migros extends Generic {
         else 
             currentPriceEl.text('CHF '+currentPrice_chf)
 
-        let usualPrice_chf = usualPriceEl.text().replace('.-', '').replace('-', '').replace('statt', '').trim();
+        currentPriceEl.addClass("updated")
+
+        let usualPrice_chf = usualPriceEl.text().replace('statt', '').replace('.-', '').replace('CHF','').replace("€",'').replace("ab",'').replace("Nan",'').replace('-', '').trim();
         usualPrice_chf = parseFloat(usualPrice_chf)
 
-        console.log(currentPrice_chf, currentPrice_eur, category)
 
 
         // discount
@@ -415,13 +446,24 @@ class Migros extends Generic {
      * @returns
      * @memberof Migros
      */
-    getProductData(customBody = false) {
+    async getProductData(customBody = false) {
         const $body = $(customBody || document);
 
+        const category = this.getProductCategory(customBody);
+        let price = $body.find('.current-price').first().text().replace("€",'').replace('.-','').replace('-','').replace("chf",'').replace('CHF','').replace('EUR','').replace('eur','')
+        // convert price
+        if(await Storage.get("bfc:country") == 'de' && !$('.current-price').hasClass("updated"))
+            price = convertPrice(price,category)
+
+        $('.current-price').addClass("updated")
+        
+        const regex = /(([\d]+)[xX])?([\d.?]+)\s?(l|ml|g|kg|gr|G|GR|ML|L|KG)([\s?.?,?;?])/
+        const sizeMatch = regex.exec($body.find(".sidebar-subtext").text()) || regex.exec($body.find('.sidebar-product-name').first().text())
         return {
-            category: this.getProductCategory(customBody),
-            name: $body.find('.sidebar-product-name').first().text(),
-            price: $body.find('.current-price').first().text().replace("€",'').replace('-','').replace("chf",''),
+            category,
+            name: $body.find('.sidebar-product-name').first().text().replace(regex,''),
+            price,
+            size: sizeMatch ? unit((sizeMatch[2]||1)*sizeMatch[3],sizeMatch[4].toLowerCase()) : false,
             img: $body.find('.product-stage-slider-image').first().attr("data-src")
         }
     }
@@ -434,8 +476,13 @@ class Migros extends Generic {
      */
     clean() {
         // Single Product Page
+        // Remove Availability Information
+        $('.sidebar-availability-store-information, .sidebar-product-availability').remove()
 
-        //Remove Discount (BY JIE)
+        // Remove Add to Favorite 
+        $('.sidebar-favorite-button-container').remove()
+
+        // Remove Discount (BY JIE)
         $('.sidebar-discount-badge').remove()
 
         // Remove Review and rating (BY JIE)
@@ -443,14 +490,6 @@ class Migros extends Generic {
 
         // Remove energy-pictogram-box(BY JIE)
         $('.energy-pictogram-box').remove()
-
-        // Remove Availability Information
-        $('.sidebar-availability-store-information, .sidebar-product-availability').remove()
-
-        // Remove Add to Favorite 
-        $('.sidebar-favorite-button-container').remove()
-
-
 
         // Category Overview Page
         $(`
@@ -465,12 +504,17 @@ class Migros extends Generic {
             .sidebar-teaser,
             .sidebar-retailer,
             .retailer-tabs,
+            .related-container,
             #gopt-related-products,
             .container-fluid.is-relative.is-overflow-hidden.is-bg-cover-center-right.bg.is-inverted.is-overlapping-product-trigger,
             .mui-teaser-picture-desktop,
             .js-no-preferred-store,
             .mui-favorite-button ,
             .community-tabs-pane,
+            #gopt-last-seen-products,
+            .group-discounts-list,
+            .group-discounts-container,
+            .js-sorting-container,
             .bg-wooden,
             .js-filter-widget.filters-container.products-filters,
             .mui-share-buttons,
