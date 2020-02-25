@@ -463,6 +463,7 @@ class Migros extends Generic {
             category,
             name: $body.find('.sidebar-product-name').first().text().replace(regex,''),
             price,
+            nutritionTable: this.getFoodValues(customBody),
             size: sizeMatch ? unit((sizeMatch[2]||1)*sizeMatch[3],sizeMatch[4].toLowerCase()) : false,
             img: $body.find('.product-stage-slider-image').first().attr("data-src")
         }
@@ -482,13 +483,13 @@ class Migros extends Generic {
         // Remove Add to Favorite 
         $('.sidebar-favorite-button-container').remove()
 
-        // Remove Discount (BY JIE)
+        // Remove DISCOUNT
         $('.sidebar-discount-badge').remove()
 
-        // Remove Review and rating (BY JIE)
+        // Remove Review and rating
         $('.mui-rating, .mui-rating-counter').remove()
 
-        // Remove energy-pictogram-box(BY JIE)
+        // Remove energy-pictogram-box
         $('.energy-pictogram-box').remove()
 
         // Category Overview Page
