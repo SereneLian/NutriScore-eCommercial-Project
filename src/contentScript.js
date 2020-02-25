@@ -35,8 +35,7 @@ firebase.initializeApp({
    */
   const initApp = async (tracker) => {
 
-
-    console.log("INIT Better Food Choices Extension")
+    $("#bfcLoader").remove()
 
     // check region
 
@@ -48,7 +47,6 @@ firebase.initializeApp({
     const App = new BetterFoodChoice(tracker);
     App.init(await Storage.get("bfc:studyGroup"));
 
-    console.log(await Storage.get("bfc:studyGroup"), await Storage.get("bfc:studyStatus"))
 
     // if study completed disable cart
     if (await Storage.get("bfc:studyStatus") == 2)
@@ -81,7 +79,7 @@ firebase.initializeApp({
 
       tracker.trackEvent("finish_study", basket);
 
-      BetterFoodChoice.showAlert('Thank you!', 'You completed the shopping. Please go to the final survey!', async () => {
+      BetterFoodChoice.showAlert('Vielen Dank!', 'Sie haben Ihren Einkauf beendet. Bitte fahren Sie nun mit dem nächsten Fragebogen fort', async () => {
         // redirect to survey
         // group
         const group = await Storage.get('bfc:studyGroup');
@@ -102,7 +100,7 @@ firebase.initializeApp({
 
         window.location.href = `https://www.soscisurvey.de/NUS_1/?r=${userID}&q=${q}`
         $("#bfcCart").remove();
-      })
+      }, 'Zum nächsten Fragebogen')
 
     }
 
@@ -113,6 +111,10 @@ firebase.initializeApp({
   const initSurvey = async () => {
     const survey = new Survey(await Storage.get("bfc:country"))
     survey.render(async (data) => {
+
+
+      // show loader
+      $("body").append($("<div id='bfcLoader'>").html("<p>Wird geladen</p>"))
 
       // language change
       Storage.set("bfc:country", data.country)
@@ -145,6 +147,11 @@ firebase.initializeApp({
   // if not completed survey
   if(! await Storage.get('bfc:introSurvey') && await Storage.get("bfc:studyStatus") == '1'){
     initSurvey()
+  }
+
+  // restart
+  if(await Storage.get("bfc:studyStatus") == '2'){
+    BetterFoodChoice.showRestartButton()
   }
 
 
