@@ -26,8 +26,9 @@
     "sass-loader": "^8.0.0",
     "size-plugin": "^2.0.1",
     "style-loader": "^1.1.2",
-    "webpack": "^4.41.4",
+    "webpack": "^4.41.6",
     "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.3",
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "mathjs": "^6.2.5",
     "preact": "^10.1.1",
     "react-pose": "^4.0.10",
+    "react-toastify": "^5.5.0",
     "shortid": "^2.2.15",
     "yup": "^0.28.0"
   }
