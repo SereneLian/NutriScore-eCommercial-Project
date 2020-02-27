@@ -64,27 +64,27 @@ const CartList = props => {
                         <p>
                         {p.quantity > 1 ? p.quantity+' x':''}{p.name}
                             <span>{p.currency.toUpperCase()} {p.price}</span>
-                            <span>{p.size ? multiply(p.size,p.quantity||1).toString():''}</span>
+                            <span>{p.size ? multiply(p.size,p.quantity||1).format({precision:3}):''}</span>
                             {((group === 'A') || (group == 'B' && ['C','D','E'].indexOf(p.nutriScore) === -1)) && <img src={chrome.runtime.getURL(`ns${p.nutriScore}.png`)} />}
                         </p>
-                        <a href="#" onClick={e => {
+                        <a href="#" style={{color:'white'}} onClick={e => {
                             e.preventDefault()
                             props.removeProduct(p.gtin)
-                        }}><CloseIcon  color={"white"}/></a>
+                        }}>-</a>
                     </div>
                 ))}
                 {props.products.length === 0 && <p>Noch keine Produkte</p>}
             </div>
             <div className="listFooter">
                 <div className="innerFooter">
-                <p className="tot">Summe: <span style={{display:'block'}}>{((props.products[0] || {}).currency || 'chf').toUpperCase()} {total.toFixed(2)}</span></p>
+                <p className="tot">Summe: <span style={{display:'block'}}>{country == 'ch' ? 'CHF' : '€'} {total.toFixed(2)}</span></p>
                 <button className="button" onClick={e => {
                     // return if over budget
                     if(total > settings.maxBudget[country]){
-                        toast.warn(`Over budget! (max: ${country == 'ch' ? 'CHF' : '€'}${settings.maxBudget[country]})`);
+                        toast.warn(`Budget überschritten! (max: ${country == 'ch' ? 'CHF' : '€'}${settings.maxBudget[country]})`);
                         return
                     }
-                    BetterFoodChoice.showAlert("Studie beenden","Sind Sie sicher, dass Sie Ihre Einkaufsaufgabe beendet haben?", ()=>{
+                    BetterFoodChoice.showAlert("Einkauf beenden","Sind Sie sicher, dassS ie Ihren Einkauf erledigt haben?", ()=>{
                         
                     }, 'Nein', ()=>{
                         props.setShowCartList(false)
@@ -161,14 +161,14 @@ const CartTemplate = props => {
     useEffect(()=>{
         if(!init) // prevent override empty cart
             return
-        Storage.set("bfc:cart", JSON.stringify(products.map(p => p.size ? ({...p, size: p.size.toString()}) :p)))
+        Storage.set("bfc:cart", JSON.stringify(products.map(p => p.size ? ({...p, size: p.size.format({precision:3})}) :p)))
     },[products])
 
     return [
         <TaskButton />,
         <ToastContainer />,
         <CartButton count={products.reduce((sum ,p) => sum+(p.quantity || 1), 0)} setShowCartList={setShowCartList}/>,
-        <CartList products={products} onFinishStudy={() => props.cartClass.onFinishStudy(products.map(p => p.size ? {...p,size: multiply(p.size, p.quantity||1).toString()} : p))} showCartList={showCartList} setShowCartList={setShowCartList} removeProduct={removeProduct}/>
+        <CartList products={products} onFinishStudy={() => props.cartClass.onFinishStudy(products.map(p => p.size ? {...p,size: multiply(p.size, p.quantity||1).format({precision:3})} : p))} showCartList={showCartList} setShowCartList={setShowCartList} removeProduct={removeProduct}/>
     ]
 
 }
