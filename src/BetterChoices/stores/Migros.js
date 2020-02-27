@@ -73,22 +73,14 @@ class Migros extends Generic {
 
     setDefaultOrdering() {
         // delete options
-        const select = $(".mui-form-control-select.mui-form-control-select-simple.js-sort-articles-select");
-        select.find("option")
-            .filter(function () {
-                return $(this).attr("value").indexOf('price') > -1 ? true : false;
-            }).remove();
-
-        // set default rank
-        if (select.length) {
-            const rightOptionValue = select.find("option")
-                .filter(function () {
-                    return $(this).attr("value").indexOf('name_asc') > -1 ? true : false;
-                }).attr("option")
-            select.val(rightOptionValue);
-            // trigger change
-            select.change()
+        const select = $(".js-sort-articles-select");
+        
+        if (select.length && select.val().indexOf('name_asc') <0) {
+            window.location.href = select.find("option").filter(function () {
+                return $(this).attr("value").indexOf('name_asc') > -1 ? true : false;
+            }).first().attr("value")
         }
+        $('.js-sorting-container').remove()
     }
 
     hideProducts(){
@@ -483,13 +475,12 @@ class Migros extends Generic {
         // Remove Add to Favorite 
         $('.sidebar-favorite-button-container').remove()
 
-        // Remove DISCOUNT
         $('.sidebar-discount-badge').remove()
 
-        // Remove Review and rating
+        // Remove Review and rating (BY JIE)
         $('.mui-rating, .mui-rating-counter').remove()
 
-        // Remove energy-pictogram-box
+        // Remove energy-pictogram-box(BY JIE)
         $('.energy-pictogram-box').remove()
 
         // Category Overview Page
@@ -506,6 +497,7 @@ class Migros extends Generic {
             .sidebar-retailer,
             .retailer-tabs,
             .related-container,
+            .listing-switcher li:eq(1),
             #gopt-related-products,
             .container-fluid.is-relative.is-overflow-hidden.is-bg-cover-center-right.bg.is-inverted.is-overlapping-product-trigger,
             .mui-teaser-picture-desktop,
@@ -515,7 +507,6 @@ class Migros extends Generic {
             #gopt-last-seen-products,
             .group-discounts-list,
             .group-discounts-container,
-            .js-sorting-container,
             .bg-wooden,
             .js-filter-widget.filters-container.products-filters,
             .mui-share-buttons,
