@@ -114,7 +114,7 @@ firebase.initializeApp({
 
 
       // show loader
-      $("body").append($("<div id='bfcLoader'>").html("<p>Wird geladen</p>"))
+      $("body").append($("<div id='bfcLoader'>").html("<p>Loading</p>"))
 
       // language change
       Storage.set("bfc:country", data.country)
@@ -124,10 +124,11 @@ firebase.initializeApp({
 
 
       // send infos to backed
-      let studyGroup = await tracker.trackEvent('survey', data)
+      let response = await tracker.trackEvent('survey', {
+        ...data,
+        studyGroup: await Storage.get('bfc:studyGroup')
+      })
 
-      // set study group
-      Storage.set('bfc:studyGroup', studyGroup)
 
       // callback when done survey  
       initApp(tracker)
