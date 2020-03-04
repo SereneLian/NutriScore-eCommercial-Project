@@ -482,6 +482,7 @@ class Migros extends Generic {
         // Category Overview Page
         $(`
             .js-banner-1,
+            .mui-form-control-container,
             .discount-stage,
             .js-banner-2,
             .bg-wooden,
